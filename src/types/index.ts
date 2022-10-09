@@ -1,3 +1,5 @@
+import { ethers, providers } from "ethers"
+
 export type RpcProviderName = 'alchemy' | 'infura' | 'public'
 
 type AddEthereumChainParameter = {
@@ -34,3 +36,20 @@ export type Chain = {
     /** Flag for test networks */
     testnet?: boolean
 }
+
+export type Provider = providers.BaseProvider & { chains?: Chain[], chainId?: number }
+
+export type ChainProviderFn<
+    TProvider extends Provider = providers.BaseProvider,
+    TChain extends Chain = Chain,
+> = (chain: TChain) => {
+    chain: TChain
+    provider: () => ProviderWithFallbackConfig<TProvider>
+} | null
+
+export type FallbackProviderConfig = Omit<
+    providers.FallbackProviderConfig,
+    'provider'
+>
+export type ProviderWithFallbackConfig<TProvider extends providers.Provider> =
+    TProvider & FallbackProviderConfig

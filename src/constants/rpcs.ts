@@ -55,12 +55,4 @@ export const publicRpcUrls: Record<PublicChains, string> = {
     goerli: `${alchemyRpcUrls.goerli}/${defaultAlchemyApiKey}`,
     kovan: `${alchemyRpcUrls.kovan}/${defaultAlchemyApiKey}`,
     sepolia: 'https://rpc.sepolia.org',
-    optimism: 'https://mainnet.optimism.io',
-    optimismKovan: 'https://kovan.optimism.io',
-    optimismGoerli: 'https://goerli.optimism.io',
-    polygon: 'https://polygon-rpc.com',
-    polygonMumbai: 'https://matic-mumbai.chainstacklabs.com',
-    arbitrum: 'https://arb1.arbitrum.io/rpc',
-    arbitrumRinkeby: 'https://rinkeby.arbitrum.io/rpc',
-    arbitrumGoerli: 'https://goerli-rollup.arbitrum.io/rpc',
 } as const

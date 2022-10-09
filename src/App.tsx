@@ -1,96 +1,89 @@
-import { createRef, FormEvent, useRef, useState } from "react";
+import { Box, Option, Select } from "@mui/joy";
 import { CssVarsProvider } from "@mui/joy/styles";
-import { Button, Sheet, TextField } from "@mui/joy";
-import FormControl from "@mui/joy/FormControl";
-import FormLabel from "@mui/joy/FormLabel";
-import FormHelperText from "@mui/joy/FormHelperText";
-import Input from "@mui/joy/Input";
-import { useWallet, WalletProvider } from "./context/wallet.context";
-import { verifyPrivateKey } from "./utils";
-import { ethers, Wallet } from "ethers";
+import { Wallet } from "ethers";
+import { useState } from "react";
+import { useLocalStorage } from "usehooks-ts";
+import Account from "./components/Account";
+import Paper from "./components/Paper";
+import PrivateKeyForm from "./components/PrivateKeyForm";
+import TokenList from "./components/TokenList";
+import { ProviderProvider } from "./context/provider.context";
+import { WalletProvider } from "./context/wallet.context";
+import { chains, getProvider } from "./providers";
+import { Provider } from "./types";
+import theme from "./styles/theme";
 
-function Test() {
-  const wallet = useWallet();
-
-  return <div>{wallet.address}</div>;
-}
+import "./styles/index.css";
 
 function App() {
-  const [wallet, setWallet] = useState<Wallet | null>(null);
-  const [error, setError] = useState("");
+  const [wallet, setWallet] = useState<Wallet | null>();
+  const [selectedChainId, setSelectedChainId] = useLocalStorage<number>(
+    "eth-wallet-chain-id",
+    chains[0].id
+  );
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [provider, setProvider] = useState<Provider>(
+    getProvider({ chainId: selectedChainId })
+  );
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    setError("");
-    setWallet(null);
-
-    const formData = new FormData(event.target as HTMLFormElement);
-    const value = formData.get("key") as string;
-    if (!value) {
-      // In case we disconnecting, reset input value
-      if (inputRef.current?.firstChild) {
-        (inputRef.current.firstChild as HTMLInputElement).value = "";
-      }
-      return;
-    }
-    const isValid = verifyPrivateKey(value);
-
-    if (isValid) {
-      try {
-        const wallet = new ethers.Wallet(value);
-        setWallet(wallet);
-      } catch {
-        setError("not a valid private key");
-      }
-    } else {
-      setError("not a valid private key");
-    }
+  const handleChainChange = (newChainId: number) => {
+    setProvider(getProvider({ chainId: newChainId }));
+    setSelectedChainId(newChainId);
   };
 
-  return (
-    <CssVarsProvider>
-      <form onSubmit={handleSubmit}>
-        <Sheet sx={{ display: "flex", alignItems: "start" }}>
-          <FormControl
-            error={!!error}
-            sx={{
-              width: "600px",
-            }}
-          >
-            <Input
-              disabled={!!wallet}
-              ref={inputRef}
-              sx={{
-                borderTopRightRadius: 0,
-                borderBottomRightRadius: 0,
-              }}
-              name="key"
-              placeholder="Enter private key"
-            />
-            <FormHelperText>
-              {" "}
-              {error ? "Invalid private key" : " "}
-            </FormHelperText>
-          </FormControl>
+  const isConnected = Boolean(wallet);
 
-          <Button
-            sx={{
-              borderTopLeftRadius: 0,
-              borderBottomLeftRadius: 0,
-              minWidth: 110,
+  return (
+    <CssVarsProvider theme={theme}>
+      <Box
+        sx={{
+          maxWidth: "900px",
+          flexDirection: "column",
+          justifyContent: "center",
+          display: "flex",
+          margin: "0 auto",
+        }}
+      >
+        <Paper
+          sx={{
+            width: "100%",
+            display: "flex",
+            alignItems: "start",
+            justifyContent: "center",
+          }}
+        >
+          <PrivateKeyForm
+            onSuccess={(wallet) => {
+              setWallet(wallet);
             }}
-            type="submit"
+            onError={() => {
+              setWallet(null);
+            }}
+            connected={isConnected}
+          />
+          <Select
+            sx={{
+              marginLeft: 2,
+            }}
+            value={selectedChainId}
+            onChange={(_, newValue) => handleChainChange(newValue as number)}
           >
-            {wallet ? "Disconnect" : "Connect"}
-          </Button>
-        </Sheet>
-      </form>
-      <WalletProvider wallet={wallet}>
-        <Test />
-      </WalletProvider>
+            {chains.map(({ id, name }) => (
+              <Option key={id} value={id}>
+                {name}
+              </Option>
+            ))}
+          </Select>
+        </Paper>
+        <ProviderProvider provider={provider}>
+          <WalletProvider wallet={wallet}>
+            <>
+              <Account />
+              <TokenList />
+            </>
+          </WalletProvider>
+        </ProviderProvider>
+      </Box>
     </CssVarsProvider>
   );
 }
