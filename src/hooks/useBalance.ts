@@ -29,7 +29,7 @@ export function useBalance({ address, token }: { address: string | undefined | n
         const balance = await provider.getBalance(wallet.address)
         return utils.formatEther(balance)
 
-    }, [wallet, contract])
+    }, [wallet, contract, provider])
 
     const result = useAsync({ asyncFn: fetchFn, initialData: null, immediate: false });
 

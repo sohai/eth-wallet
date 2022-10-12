@@ -46,7 +46,11 @@ export default function Account() {
       {status === "loading" && counter === 0 && <BalanceLoadingPlaceholder />}
       {((status === "loading" && counter > 0) || status === "success") && (
         <Box display="flex" alignItems={"center"}>
-          <Typography marginRight={1} textAlign={"center"}>
+          <Typography
+            marginRight={1}
+            textAlign={"center"}
+            data-testid="eth-balance"
+          >
             {balance} {activeChain?.nativeCurrency?.symbol}
           </Typography>
 
@@ -54,6 +58,7 @@ export default function Account() {
             aria-label="Send"
             size="sm"
             color="primary"
+            data-testid="send-eth"
             sx={{
               marginRight: 1,
             }}
@@ -68,7 +73,10 @@ export default function Account() {
         onClose={() => setOpen(false)}
         tokenSymbol={activeChain?.nativeCurrency?.symbol as string}
       >
-        <SendTokenForm availableBalance={balance as string} />
+        <SendTokenForm
+          availableBalance={balance as string}
+          tokenSymbol={activeChain?.nativeCurrency?.symbol as string}
+        />
       </SendTokenModal>
     </Paper>
   );

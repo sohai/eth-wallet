@@ -106,4 +106,4 @@ export const sepolia: Chain = {
     testnet: true,
 }
 
-export default [mainnet, ropsten, rinkeby, goerli, kovan, sepolia]
+export default [goerli, sepolia]

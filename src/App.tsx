@@ -2,7 +2,6 @@ import { Box, Option, Select } from "@mui/joy";
 import { CssVarsProvider } from "@mui/joy/styles";
 import { Wallet } from "ethers";
 import { useState } from "react";
-import { useLocalStorage } from "usehooks-ts";
 import Account from "./components/Account";
 import Paper from "./components/Paper";
 import PrivateKeyForm from "./components/PrivateKeyForm";
@@ -10,13 +9,14 @@ import TokenList from "./components/TokenList";
 import { ProviderProvider } from "./context/provider.context";
 import { WalletProvider } from "./context/wallet.context";
 import { chains, getProvider } from "./providers";
-import { Provider } from "./types";
 import theme from "./styles/theme";
+import { Provider } from "./types";
+import { useLocalStorage } from "./hooks/useLocalStorage";
 
 import "./styles/index.css";
 
 function App() {
-  const [wallet, setWallet] = useState<Wallet | null>();
+  const [wallet, setWallet] = useState<Wallet | null>(null);
   const [selectedChainId, setSelectedChainId] = useLocalStorage<number>(
     "eth-wallet-chain-id",
     chains[0].id
@@ -27,8 +27,12 @@ function App() {
   );
 
   const handleChainChange = (newChainId: number) => {
-    setProvider(getProvider({ chainId: newChainId }));
+    const newProvider = getProvider({ chainId: newChainId });
+    setProvider(newProvider);
     setSelectedChainId(newChainId);
+    // if (wallet) {
+    //   setWallet(wallet.connect(newProvider));
+    // }
   };
 
   const isConnected = Boolean(wallet);

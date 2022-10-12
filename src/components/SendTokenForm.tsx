@@ -91,8 +91,10 @@ export default function SendTokenForm({
 
       setTxHash(txResponse.hash);
       await txResponse.wait();
-    } catch (e) {
-      setSubmittingError(e.message);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        setSubmittingError(e.message);
+      }
     } finally {
       setIsSubmitting(false);
     }
