@@ -4,7 +4,7 @@ import { IconButton, ListItem, ListItemContent, Typography } from "@mui/joy";
 import { ethers } from "ethers";
 import { useCallback, useMemo, useState } from "react";
 import ContentLoader from "react-content-loader";
-import { erc20ABI } from "../context/abis";
+import { erc20ABI } from "../constants/abis";
 import { useProvider } from "../context/provider.context";
 import { useWallet } from "../context/wallet.context";
 import useAsync from "../hooks/useAsync";

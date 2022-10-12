@@ -81,12 +81,22 @@ test("should send eth", async ({ page }) => {
     timeout: 30000,
   });
 
+  const etherscanUrl = (await page
+    .getByText("Etherscan")
+    .getAttribute("href")) as string;
+
+  const spittedUrl = etherscanUrl?.split("/");
+  const txHash = spittedUrl[spittedUrl?.length - 1];
+
   //close modal
   await page.getByTestId("CloseIcon").click();
   //@TODO: better way of checking balance after sending some amount
   await expect(page.getByTestId("eth-balance")).not.toHaveText(
     balance as string
   );
+
+  //tx added to recent transactions
+  await expect(page.getByText(txHash)).toBeVisible();
 });
 test("should show error if transaction failed", async () => {
   test.skip();

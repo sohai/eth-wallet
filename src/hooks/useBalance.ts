@@ -1,6 +1,6 @@
 import { ethers, utils } from "ethers";
 import { useCallback, useEffect, useMemo } from "react";
-import { erc20ABI } from "../context/abis";
+import { erc20ABI } from "../constants/abis";
 import { useProvider } from "../context/provider.context";
 import { useWallet } from "../context/wallet.context";
 import useAsync from "./useAsync";

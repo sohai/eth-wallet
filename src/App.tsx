@@ -8,11 +8,12 @@ import PrivateKeyForm from "./components/PrivateKeyForm";
 import TokenList from "./components/TokenList";
 import { ProviderProvider } from "./context/provider.context";
 import { WalletProvider } from "./context/wallet.context";
+import { useLocalStorage } from "./hooks/useLocalStorage";
 import { chains, getProvider } from "./providers";
 import theme from "./styles/theme";
 import { Provider } from "./types";
-import { useLocalStorage } from "./hooks/useLocalStorage";
-
+import TransactionsHistory from "./components/TransactionsHistory";
+import { TransactionStoreProvider } from "./context/TransactionsStore.context";
 import "./styles/index.css";
 
 function App() {
@@ -30,9 +31,6 @@ function App() {
     const newProvider = getProvider({ chainId: newChainId });
     setProvider(newProvider);
     setSelectedChainId(newChainId);
-    // if (wallet) {
-    //   setWallet(wallet.connect(newProvider));
-    // }
   };
 
   const isConnected = Boolean(wallet);
@@ -68,6 +66,7 @@ function App() {
           <Select
             sx={{
               marginLeft: 2,
+              minWidth: "120px",
             }}
             value={selectedChainId}
             onChange={(_, newValue) => handleChainChange(newValue as number)}
@@ -81,10 +80,13 @@ function App() {
         </Paper>
         <ProviderProvider provider={provider}>
           <WalletProvider wallet={wallet}>
-            <>
-              <Account />
-              <TokenList />
-            </>
+            <TransactionStoreProvider>
+              <>
+                <Account />
+                <TokenList />
+                <TransactionsHistory />
+              </>
+            </TransactionStoreProvider>
           </WalletProvider>
         </ProviderProvider>
       </Box>

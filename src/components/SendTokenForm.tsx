@@ -1,21 +1,14 @@
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Link,
-  LinkProps,
-  TextField,
-  Typography,
-} from "@mui/joy";
-import { Stack } from "@mui/system";
-import SendIcon from "@mui/icons-material/Send";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import useActiveChain from "../hooks/useActiveChain";
-import { ethers } from "ethers";
-import { useWallet } from "../context/wallet.context";
-import { useProvider } from "../context/provider.context";
+import SendIcon from "@mui/icons-material/Send";
+import { Box, Button, CircularProgress, TextField, Typography } from "@mui/joy";
+import { Stack } from "@mui/system";
+import { BigNumber, ethers } from "ethers";
 import { FormEvent, useState } from "react";
-import { erc20ABI } from "../context/abis";
+import { erc20ABI } from "../constants/abis";
+import { useProvider } from "../context/provider.context";
+import { useWallet } from "../context/wallet.context";
+import useAddRecentTransaction from "../hooks/useAddRecentTransactions";
+import EtherscanLink from "./EtherscanLink";
 
 type SendTokenFormProps = {
   availableBalance: string;
@@ -30,13 +23,15 @@ export default function SendTokenForm({
 }: SendTokenFormProps) {
   const wallet = useWallet();
   const provider = useProvider();
-  const activeChain = useActiveChain();
+  const addRecentTransaction = useAddRecentTransaction();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittingError, setSubmittingError] = useState("");
 
   const [recipientAddressError, setRecipientAddressError] = useState("");
   const [amountError, setAmountError] = useState("");
+
+  //@TODO: transactionsStore could be use instead
   const [txHash, setTxHash] = useState<string>("");
 
   //@TODO: That  should be useSendTransaction hook
@@ -51,13 +46,15 @@ export default function SendTokenForm({
     const amount = formData.get("amount") as string;
     const to = formData.get("recipientAddress") as string;
     let formValuesError = false;
-    let amountWei;
+    let value;
     if (!ethers.utils.isAddress(to)) {
       formValuesError = true;
       setRecipientAddressError("Invalid address");
     }
     try {
-      amountWei = ethers.utils.parseEther(amount);
+      value = contractAddress
+        ? ethers.utils.parseUnits(amount, 18)
+        : ethers.utils.parseEther(amount);
     } catch {
       formValuesError = true;
       setAmountError("Invalid amount value");
@@ -71,7 +68,7 @@ export default function SendTokenForm({
     try {
       const tx = {
         to,
-        value: amountWei,
+        value: value,
       };
       const walletSigner = wallet.connect(provider);
 
@@ -84,10 +81,16 @@ export default function SendTokenForm({
           walletSigner
         );
         txResponse = await contract.transfer(tx.to, tx.value);
-        console.log(txResponse);
       } else {
         txResponse = await walletSigner.sendTransaction(tx);
       }
+
+      addRecentTransaction({
+        hash: txResponse.hash,
+        tokenSymbol,
+        to: txResponse.to,
+        value: value as BigNumber,
+      });
 
       setTxHash(txResponse.hash);
       await txResponse.wait();
@@ -185,18 +188,5 @@ export default function SendTokenForm({
         )}
       </Stack>
     </form>
-  );
-}
-
-function EtherscanLink({ txHash, ...other }: LinkProps & { txHash: string }) {
-  const activeChain = useActiveChain();
-  return (
-    <Link
-      disabled={!txHash}
-      href={`https://${activeChain?.name}.etherscan.io/tx/${txHash}`}
-      {...other}
-    >
-      Etherscan
-    </Link>
   );
 }
