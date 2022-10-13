@@ -68,7 +68,7 @@ export default function TokenListItem({ address }: { address: string }) {
   } = useAsync({
     asyncFn: getTokenInfo,
     initialData: null,
-    immediate: false,
+    immediate: true,
   });
 
   const wallet = useWallet();

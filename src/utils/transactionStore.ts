@@ -1,6 +1,6 @@
 import { BigNumber, providers } from 'ethers';
 
-const storageKey = 'rk-transactions';
+const storageKey = 'eth-wallet-transactions';
 
 type TransactionStatus = 'pending' | 'confirmed' | 'failed';
 

@@ -90,6 +90,7 @@ test("should send eth", async ({ page }) => {
 
   //close modal
   await page.getByTestId("CloseIcon").click();
+  
   //@TODO: better way of checking balance after sending some amount
   await expect(page.getByTestId("eth-balance")).not.toHaveText(
     balance as string

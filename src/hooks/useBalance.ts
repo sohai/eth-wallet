@@ -31,7 +31,7 @@ export function useBalance({ address, token }: { address: string | undefined | n
 
     }, [wallet, contract, provider])
 
-    const result = useAsync({ asyncFn: fetchFn, initialData: null, immediate: false });
+    const result = useAsync({ asyncFn: fetchFn, initialData: null, immediate: true });
 
     useEffect(() => {
 
