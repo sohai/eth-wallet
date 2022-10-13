@@ -1,7 +1,7 @@
 ## This projet uses
 
 - [ethers](https://docs.ethers.io/v5/) to interact with ETH blockchain
-- [Joy UI](https://mui.com/joy-ui/getting-started/overview/) for bast UI prototyping
+- [Joy UI](https://mui.com/joy-ui/getting-started/overview/) for fast UI prototyping
 - [Vite](https://vitejs.dev/) for building frontend
 - [Vitest](https://vitest.dev/) for testing frontend
 - [Playwright](https://playwright.dev/) for e2e tests
@@ -31,7 +31,7 @@ cp .env.sample .env
 
 and add required values
 
-Provider api keys are required to run application, moreover test account private keys are required for e2e tests
+Provider api keys are required to run application, test account private keys are required for e2e tests
 
 ## Install dependencies
 
@@ -60,13 +60,13 @@ npm run build
 npm run test:e2e
 ```
 
-## Compile waver smart contract
+## Compile smart contract
 
 ```
  npx hardhat compile --config hardhat.config.cjs
 ```
 
-## Deploy waver smart contract
+## Deploy smart contract
 
 ```
   npx hardhat run scripts/deploy.cjs --config hardhat.config.cjs
