@@ -1,4 +1,4 @@
-import { Box, Option, Select } from "@mui/joy";
+import { Box, Option, Select, Typography } from "@mui/joy";
 import { CssVarsProvider } from "@mui/joy/styles";
 import { Wallet } from "ethers";
 import { useState } from "react";
@@ -15,6 +15,8 @@ import { Provider } from "./types";
 import TransactionsHistory from "./components/TransactionsHistory";
 import { TransactionStoreProvider } from "./context/TransactionsStore.context";
 import "./styles/index.css";
+import Waver from "./components/Waver";
+import { chainId } from "./constants/chains";
 
 function App() {
   const [wallet, setWallet] = useState<Wallet | null>(null);
@@ -34,7 +36,7 @@ function App() {
   };
 
   const isConnected = Boolean(wallet);
-
+ 
   return (
     <CssVarsProvider theme={theme}>
       <Box
@@ -85,6 +87,12 @@ function App() {
                 <Account />
                 <TokenList />
                 <TransactionsHistory />
+                {selectedChainId === chainId.goerli && <Waver />}
+                {selectedChainId !== chainId.goerli && (
+                  <Typography level="body5">
+                    Waver only available on Goerli network
+                  </Typography>
+                )}
               </>
             </TransactionStoreProvider>
           </WalletProvider>

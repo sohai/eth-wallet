@@ -30,7 +30,7 @@ function reducer<T>(state: State<T>, action: Action<T>): State<T> {
     }
 }
 
-export default function useAsync<K>({ asyncFn: asyncFn, initialData: propsInitialData, immediate: pause = false }: { asyncFn: () => Promise<K>, initialData?: K, immediate?: boolean }) {
+export default function useAsync<K>({ asyncFn: asyncFn, initialData: propsInitialData, immediate = false }: { asyncFn: () => Promise<K>, initialData?: K, immediate?: boolean }) {
 
     const initialData = propsInitialData || null;
 
@@ -66,14 +66,14 @@ export default function useAsync<K>({ asyncFn: asyncFn, initialData: propsInitia
             }
         };
 
-        if (!pause || counter > 0) {
+        if (immediate || counter > 0) {
             fetchData();
         }
 
         return function cleanup() {
             requestCanceled = true;
         };
-    }, [asyncFn, pause, counter]);
+    }, [asyncFn, immediate, counter]);
 
     return { ...state, counter, execute, reset };
 }

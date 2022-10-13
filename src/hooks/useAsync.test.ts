@@ -8,7 +8,7 @@ describe('useAsync', () => {
 
         const asyncFn = async () => { return expectedValue };
 
-        const { result } = renderHook(() => useAsync({ asyncFn, immediate: false }));
+        const { result } = renderHook(() => useAsync({ asyncFn, immediate: true }));
 
         await waitFor(() => {
             expect(result.current.data).toBe(expectedValue);
@@ -22,7 +22,7 @@ describe('useAsync', () => {
 
         const asyncFn = async () => { throw new Error('error') };
 
-        const { result } = renderHook(() => useAsync({ asyncFn, immediate: false }));
+        const { result } = renderHook(() => useAsync({ asyncFn, immediate: true }));
 
         await waitFor(() => {
             expect(result.current.data).toBe(null);
@@ -36,19 +36,19 @@ describe('useAsync', () => {
 
         const asyncFn = async () => { return null };
 
-        const { result } = renderHook(() => useAsync({ asyncFn, immediate: true }));
+        const { result } = renderHook(() => useAsync({ asyncFn, immediate: false }));
 
         expect(result.current.data).toBe(null);
         expect(result.current.counter).toBe(0);
         expect(result.current.status).toBe('init');
 
     });
-    it('should execute for correctly', async () => {
+    it('should execute immediate', async () => {
 
         const expectedValue = 'expectedValue'
         const asyncFn = async () => { return expectedValue };
 
-        const { result } = renderHook(() => useAsync({ asyncFn, immediate: true }));
+        const { result } = renderHook(() => useAsync({ asyncFn, immediate: false }));
 
         expect(result.current.data).toBe(null);
         expect(result.current.counter).toBe(0);
@@ -68,7 +68,7 @@ describe('useAsync', () => {
         const expectedValue = 'expectedValue'
         const asyncFn = async () => expectedValue;
 
-        const { result } = renderHook(() => useAsync({ asyncFn, immediate: false }));
+        const { result } = renderHook(() => useAsync({ asyncFn, immediate: true }));
 
         await waitFor(() => {
             expect(result.current.status).toBe('loading')
@@ -83,11 +83,11 @@ describe('useAsync', () => {
 
     });
 
-    it('should counter increase counter on execute', async () => {
+    it('should counter increase on next execute', async () => {
         const expectedValue = 'expectedValue'
         const asyncFn = async () => { return expectedValue };
 
-        const { result } = renderHook(() => useAsync({ asyncFn, immediate: false }));
+        const { result } = renderHook(() => useAsync({ asyncFn, immediate: true }));
 
         await waitFor(() => {
             expect(result.current.status).toBe('success');
